@@ -1,20 +1,17 @@
 jcfp-ppa:
   pkgrepo.managed:
     - humanname: jcfp
-    - name: deb http://ppa.launchpad.net/jcfp/ppa/ubuntu precise main
+    - name: deb http://ppa.launchpad.net/jcfp/ppa/ubuntu trusty main
     - file: /etc/apt/sources.list.d/jcfp.list
     - keyid: "0x98703123E0F52B2BE16D586EF13930B14BB9F05F"
     - keyserver: keyserver.ubuntu.com
-    - dist: precise
+    - dist: trusty
 
 install-sabnzbdplus:
   pkg.installed:
     - pkgs: [sabnzbdplus]
     - watch:
       - pkgrepo: jcfp-ppa
-  service.running:
-    - enable: True
-    - name: sabnzbdplus
 
 sabnzbd-user:
   file.directory:
@@ -37,10 +34,24 @@ sabnzbd-default:
     - template: jinja
     - user: root
     - mode: 644
-    - watch_in:
-      - service: sabnzbdplus
-    - require:
-      - file: sabnzbd-user
+
+sabnzbd-stop:
+  cmd.run:
+    - name: /etc/init.d/sabnzbdplus stop
+    - prereq:
+      - file: sabnzbd-default
+
+sabnzbd-start:
+  cmd.run:
+    - name: /etc/init.d/sabnzbdplus start
+    - onchanges:
+      - file: sabnzbd-default
+
+sabnzbd-restart:
+  cmd.wait:
+    - name: sleep 2; /etc/init.d/sabnzbdplus restart
+    - watch:
+      - file: sabnzbd-config
 
 sabnzbd-config:
   file.managed:
@@ -50,7 +61,8 @@ sabnzbd-config:
     - user: www-data
     - group: www-data
     - template: jinja
-    - watch_in:
-      - service: sabnzbdplus
-    - require:
-      - file: sabnzbd-user
+
+sabnzbd-service:
+  service.running:
+    - enable: True
+    - name: sabnzbdplus
