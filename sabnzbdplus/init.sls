@@ -7,6 +7,10 @@ jcfp-ppa:
     - keyserver: keyserver.ubuntu.com
     - dist: trusty
 
+install-unrar:
+  pkg.installed:
+    - pkgs: [unrar]
+
 install-sabnzbdplus:
   pkg.installed:
     - pkgs: [sabnzbdplus]
@@ -66,3 +70,12 @@ sabnzbd-service:
   service.running:
     - enable: True
     - name: sabnzbdplus
+
+sabnzbd-cron-cleanup:
+  cron.present:
+    - identifier: sabnzbd-cron-cleanup
+    - name: curl --insecure "https://localhost:443/sabnzbd/api?apikey={{ salt['pillar.get']('sabnzbdplus:api_key') }}&mode=history&name=delete&value=failed&del_files=1"
+    - user: www-data
+    - minute: '0'
+    - hour: '*'
+
