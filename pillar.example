@@ -1,0 +1,18 @@
+sabnzbdplus:
+  - user: www-data
+  - api_key: 
+  - servers:                         
+    - hostname: news.supernews.com
+      port: 563                      
+      ssl: 1                         
+      connections: 30                
+      fillserver: 0                  
+      username: 
+      password: 
+    - hostname: sbg.newsoo.fr        
+      port: 563                      
+      ssl: 1                         
+      connections: 10                
+      fillserver: 1                  
+      username:
+      password:
